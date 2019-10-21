@@ -130,9 +130,9 @@ public class UtilTest {
         MaterialStock materialExpectedTwo = createMaterialStock("2", "2", "2", BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
         MaterialStock materialExpectedThree = createMaterialStock("3", "3", "3", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
 
+        expected.add(materialExpectedThree);
         expected.add(materialExpectedOne);
         expected.add(materialExpectedTwo);
-        expected.add(materialExpectedThree);
 
         List<MaterialStock> actual = util.countRealStocks(materialStocks, movedStocks);
 
