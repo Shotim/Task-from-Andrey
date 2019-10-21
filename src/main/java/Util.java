@@ -1,24 +1,48 @@
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 
 public class Util {
 
-    public static List<MaterialStock> countRealStocks(List<MaterialStock> basicMaterialStocks, List<MovedStock> movedMaterialStocks) {
-        movedMaterialStocks.stream().parallel()
-                .forEach(movedStock -> modifyMaterialStockByMovedStock(movedStock, basicMaterialStocks));
+    private int counter;
+
+    public List<MaterialStock> countRealStocks(List<MaterialStock> basicMaterialStocks, List<MovedStock> movedMaterialStocks) {
+        basicMaterialStocks.sort(Comparator.comparing(element -> {
+            StockId stockId = element.getId();
+            return stockId.getPlant() + " " + stockId.getStorageLocation() + " " + stockId.getMaterial();
+        }));
+
+        movedMaterialStocks.sort(Comparator.comparing(element -> {
+            StockId stockId = element.getId();
+            return stockId.getPlant() + " " + stockId.getStorageLocation() + " " + stockId.getMaterial();
+        }));
+
+        basicMaterialStocks.stream()
+                .forEach(materialStock -> modifyMaterialStockByMovedStock(materialStock, movedMaterialStocks));
+
+        this.counter = 0;
+//        movedMaterialStocks.stream().parallel()
+//                .forEach((movedStock -> modifyMaterialStockByMovedStock(movedStock,movedMaterialStocks)));
         return basicMaterialStocks;
     }
 
-    public static void modifyMaterialStockByMovedStock(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
-
-        basicMaterialStock.stream().forEach(element -> {
-            if (element.getId().equals(movedStock.getId())) {
-                modifyMaterialStock(element, movedStock);
-            }
-        });
+    private void modifyMaterialStockByMovedStock(MaterialStock materialStock, List<MovedStock> movedStocks) {
+        while (counter < movedStocks.size() && movedStocks.get(counter).getId().equals(materialStock.getId())) {
+            modifyMaterialStock(materialStock, movedStocks.get(counter));
+            counter++;
+        }
     }
 
-    private static void modifyMaterialStock(MaterialStock materialStock, MovedStock movedStock) {
+//    public static void modifyMaterialStockByMovedStock(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
+//
+//        basicMaterialStock.stream().forEach(element -> {
+//            if (element.getId().equals(movedStock.getId())) {
+//                modifyMaterialStock(element, movedStock);
+//            }
+//        });
+//    }
+
+    private void modifyMaterialStock(MaterialStock materialStock, MovedStock movedStock) {
 
         BigDecimal resultSum;
 
@@ -45,6 +69,9 @@ public class Util {
             default:
                 break;
         }
+    }
 
+    private BigDecimal toBigDecimal(String str) {
+        return new BigDecimal(Double.parseDouble(str));
     }
 }

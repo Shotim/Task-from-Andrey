@@ -4,6 +4,8 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
+
+        Util util = new Util();
         List<MaterialStock> materialStocks = new ArrayList<>();
         List<MovedStock> movedStocks = new ArrayList<>();
 
@@ -13,7 +15,7 @@ public class Main {
         }
 
         long start = System.currentTimeMillis();
-        Util.countRealStocks(materialStocks, movedStocks);
+        util.countRealStocks(materialStocks, movedStocks);
         long finish = System.currentTimeMillis();
         System.out.println(finish - start);
     }
