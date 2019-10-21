@@ -6,22 +6,20 @@ public class Util {
     public static List<MaterialStock> countRealStocks(List<MaterialStock> basicMaterialStocks, List<MovedStock> movedMaterialStocks) {
         //todo
         movedMaterialStocks.stream().parallel()
-                .forEach(movedStock -> method(movedStock, basicMaterialStocks));
+                .forEach(movedStock -> modifyMaterialStockByMovedStock(movedStock, basicMaterialStocks));
         return basicMaterialStocks;
     }
 
-    public static void method(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
+    public static void modifyMaterialStockByMovedStock(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
 
-        for (MaterialStock element : basicMaterialStock) {
-
-            if (movedStock.getId().equals(element.getId())) {
-                modifyBasicMaterialStock(movedStock, element);
+        basicMaterialStock.stream().forEach(element -> {
+            if (element.getId().equals(movedStock.getId())) {
+                modifyMaterialStock(element, movedStock);
             }
-        }
-
+        });
     }
 
-    private static void modifyBasicMaterialStock(MovedStock movedStock, MaterialStock materialStock) {
+    private static void modifyMaterialStock(MaterialStock materialStock, MovedStock movedStock) {
 
         BigDecimal resultSum;
 
