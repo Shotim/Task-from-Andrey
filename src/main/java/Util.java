@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Util {
 
-    private int counter;
+    private int movedStockListCounter;
 
     public List<MaterialStock> countRealStocks(List<MaterialStock> basicMaterialStocks, List<MovedStock> movedMaterialStocks) {
         basicMaterialStocks.sort(Comparator.comparing(element -> {
@@ -20,27 +20,17 @@ public class Util {
         basicMaterialStocks.stream()
                 .forEach(materialStock -> modifyMaterialStockByMovedStock(materialStock, movedMaterialStocks));
 
-        this.counter = 0;
-//        movedMaterialStocks.stream().parallel()
-//                .forEach((movedStock -> modifyMaterialStockByMovedStock(movedStock,movedMaterialStocks)));
+        this.movedStockListCounter = 0;
+
         return basicMaterialStocks;
     }
 
     private void modifyMaterialStockByMovedStock(MaterialStock materialStock, List<MovedStock> movedStocks) {
-        while (counter < movedStocks.size() && movedStocks.get(counter).getId().equals(materialStock.getId())) {
-            modifyMaterialStock(materialStock, movedStocks.get(counter));
-            counter++;
+        while (movedStockListCounter < movedStocks.size() && movedStocks.get(movedStockListCounter).getId().equals(materialStock.getId())) {
+            modifyMaterialStock(materialStock, movedStocks.get(movedStockListCounter));
+            movedStockListCounter++;
         }
     }
-
-//    public static void modifyMaterialStockByMovedStock(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
-//
-//        basicMaterialStock.stream().forEach(element -> {
-//            if (element.getId().equals(movedStock.getId())) {
-//                modifyMaterialStock(element, movedStock);
-//            }
-//        });
-//    }
 
     private void modifyMaterialStock(MaterialStock materialStock, MovedStock movedStock) {
 
