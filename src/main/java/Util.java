@@ -9,14 +9,12 @@ public class Util {
 
         Map<StockId, MaterialStock> materialStockMap = basicMaterialStocks.stream()
                 .collect(Collectors.toMap(MaterialStock::getId, materialStock -> materialStock));
-        movedMaterialStocks.stream()
+        movedMaterialStocks
                 .forEach(element -> modifyMaterialStock(element, materialStockMap.get(element.getId())));
         return basicMaterialStocks;
     }
 
     private void modifyMaterialStock(MovedStock movedStock, MaterialStock materialStock) {
-
-        BigDecimal resultSum;
 
         switch (movedStock.getMoveType()) {
             case "201":
@@ -25,18 +23,18 @@ public class Util {
             case "262":
             case "311":
             case "312":
-                resultSum = materialStock.getUnrestrictedStock().add(movedStock.getMovTypeSumResult());
-                materialStock.setUnrestrictedStock(resultSum);
+                BigDecimal unrestrictedSum = materialStock.getUnrestrictedStock().add(movedStock.getMovTypeSumResult());
+                materialStock.setUnrestrictedStock(unrestrictedSum);
                 break;
             case "323":
             case "324":
-                resultSum = materialStock.getQualityInspectionStock().add(movedStock.getMovTypeSumResult());
-                materialStock.setQualityInspectionStock(resultSum);
+                BigDecimal inspectionSum = materialStock.getQualityInspectionStock().add(movedStock.getMovTypeSumResult());
+                materialStock.setQualityInspectionStock(inspectionSum);
                 break;
             case "325":
             case "326":
-                resultSum = materialStock.getBlockedStock().add(movedStock.getMovTypeSumResult());
-                materialStock.setBlockedStock(resultSum);
+                BigDecimal blockedSum = materialStock.getBlockedStock().add(movedStock.getMovTypeSumResult());
+                materialStock.setBlockedStock(blockedSum);
                 break;
             default:
                 break;
