@@ -7,9 +7,17 @@ import java.util.List;
 
 public class UtilTest {
 
-    private MaterialStock createMaterialStock(int id, BigDecimal blockedStock, BigDecimal qualityStock, BigDecimal unrestrictedStock) {
+    private StockId createId(String plant, String storageLocation, String material) {
+        StockId stockId = new StockId();
+        stockId.setMaterial(material);
+        stockId.setPlant(plant);
+        stockId.setStorageLocation(storageLocation);
+        return stockId;
+    }
+
+    private MaterialStock createMaterialStock(String plant, String storageLocation, String material, BigDecimal blockedStock, BigDecimal qualityStock, BigDecimal unrestrictedStock) {
         MaterialStock materialStock = new MaterialStock();
-        materialStock.setId(id);
+        materialStock.setId(createId(plant, storageLocation, material));
         materialStock.setBlockedStock(blockedStock);
         materialStock.setQualityInspectionStock(qualityStock);
         materialStock.setUnrestrictedStock(unrestrictedStock);
@@ -17,9 +25,9 @@ public class UtilTest {
         return materialStock;
     }
 
-    private MovedStock createMovedStock(int id, String moveType, BigDecimal movTypeSumResult) {
+    private MovedStock createMovedStock(String plant, String storageLocation, String material, String moveType, BigDecimal movTypeSumResult) {
         MovedStock movedStock = new MovedStock();
-        movedStock.setId(id);
+        movedStock.setId(createId(plant, storageLocation, material));
         movedStock.setMoveType(moveType);
         movedStock.setMovTypeSumResult(movTypeSumResult);
 
@@ -30,17 +38,17 @@ public class UtilTest {
     public void countRealStocks_unrestrictedStock() {
         List<MaterialStock> materialStocks = new ArrayList<>();
 
-        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+        MaterialStock materialStock = createMaterialStock("1", "1", "1", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
         materialStocks.add(materialStock);
 
         List<MovedStock> movedStocks = new ArrayList<>();
 
-        MovedStock movedStock = createMovedStock(1, "201", BigDecimal.valueOf(87.654321));
+        MovedStock movedStock = createMovedStock("1", "1", "1", "201", BigDecimal.valueOf(87.654321));
         movedStocks.add(movedStock);
 
         List<MaterialStock> expected = new ArrayList<>();
 
-        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+        MaterialStock materialExpected = createMaterialStock("1", "1", "1", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
         expected.add(materialExpected);
 
         List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
@@ -52,17 +60,17 @@ public class UtilTest {
     public void countRealStocks_qualityInspectionStock() {
         List<MaterialStock> materialStocks = new ArrayList<>();
 
-        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        MaterialStock materialStock = createMaterialStock("1", "1", "1", BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
         materialStocks.add(materialStock);
 
         List<MovedStock> movedStocks = new ArrayList<>();
 
-        MovedStock movedStock = createMovedStock(1, "323", BigDecimal.valueOf(87.654321));
+        MovedStock movedStock = createMovedStock("1", "1", "1", "323", BigDecimal.valueOf(87.654321));
         movedStocks.add(movedStock);
 
         List<MaterialStock> expected = new ArrayList<>();
 
-        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
+        MaterialStock materialExpected = createMaterialStock("1", "1", "1", BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
         expected.add(materialExpected);
 
         List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
@@ -74,17 +82,17 @@ public class UtilTest {
     public void countRealStocks_blockedStock() {
         List<MaterialStock> materialStocks = new ArrayList<>();
 
-        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialStock = createMaterialStock("1", "1", "1", BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
         materialStocks.add(materialStock);
 
         List<MovedStock> movedStocks = new ArrayList<>();
 
-        MovedStock movedStock = createMovedStock(1, "325", BigDecimal.valueOf(87.654321));
+        MovedStock movedStock = createMovedStock("1", "1", "1", "325", BigDecimal.valueOf(87.654321));
         movedStocks.add(movedStock);
 
         List<MaterialStock> expected = new ArrayList<>();
 
-        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialExpected = createMaterialStock("1", "1", "1", BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
         expected.add(materialExpected);
 
         List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
@@ -96,9 +104,9 @@ public class UtilTest {
     public void countRealStocks_unsortedLists() {
         List<MaterialStock> materialStocks = new ArrayList<>();
 
-        MaterialStock materialStockOne = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
-        MaterialStock materialStockTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
-        MaterialStock materialStockThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+        MaterialStock materialStockOne = createMaterialStock("1", "1", "1", BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialStockTwo = createMaterialStock("2", "2", "2", BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        MaterialStock materialStockThree = createMaterialStock("3", "3", "3", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
 
         materialStocks.add(materialStockThree);
         materialStocks.add(materialStockOne);
@@ -106,9 +114,9 @@ public class UtilTest {
 
         List<MovedStock> movedStocks = new ArrayList<>();
 
-        MovedStock movedStockOne = createMovedStock(1, "326", BigDecimal.valueOf(87.654321));
-        MovedStock movedStockTwo = createMovedStock(2, "324", BigDecimal.valueOf(87.654321));
-        MovedStock movedStockThree = createMovedStock(3, "262", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockOne = createMovedStock("1", "1", "1", "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockTwo = createMovedStock("2", "2", "2", "324", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockThree = createMovedStock("3", "3", "3", "262", BigDecimal.valueOf(87.654321));
 
         movedStocks.add(movedStockTwo);
         movedStocks.add(movedStockOne);
@@ -116,9 +124,9 @@ public class UtilTest {
 
         List<MaterialStock> expected = new ArrayList<>();
 
-        MaterialStock materialExpectedOne = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
-        MaterialStock materialExpectedTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
-        MaterialStock materialExpectedThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+        MaterialStock materialExpectedOne = createMaterialStock("1", "1", "1", BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedTwo = createMaterialStock("2", "2", "2", BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedThree = createMaterialStock("3", "3", "3", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
 
         expected.add(materialExpectedThree);
         expected.add(materialExpectedOne);
@@ -133,9 +141,9 @@ public class UtilTest {
     public void countRealStocks_listsWithDifferentLength() {
         List<MaterialStock> materialStocks = new ArrayList<>();
 
-        MaterialStock materialStockOne = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialStockOne = createMaterialStock("1", "1", "1", BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
 //        MaterialStock materialStockTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
-        MaterialStock materialStockThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+        MaterialStock materialStockThree = createMaterialStock("3", "3", "3", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
 
         materialStocks.add(materialStockThree);
         materialStocks.add(materialStockOne);
@@ -143,9 +151,9 @@ public class UtilTest {
 
         List<MovedStock> movedStocks = new ArrayList<>();
 
-        MovedStock movedStockOne = createMovedStock(1, "326", BigDecimal.valueOf(87.654321));
-        MovedStock movedStockTwo = createMovedStock(2, "326", BigDecimal.valueOf(87.654321));
-        MovedStock movedStockThree = createMovedStock(3, "262", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockOne = createMovedStock("1", "1", "1", "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockTwo = createMovedStock("2", "2", "2", "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockThree = createMovedStock("3", "3", "3", "262", BigDecimal.valueOf(87.654321));
 
         movedStocks.add(movedStockThree);
         movedStocks.add(movedStockOne);
@@ -153,9 +161,9 @@ public class UtilTest {
 
         List<MaterialStock> expected = new ArrayList<>();
 
-        MaterialStock materialExpectedOne = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedOne = createMaterialStock("1", "1", "1", BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
 //        MaterialStock materialExpectedTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
-        MaterialStock materialExpectedThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+        MaterialStock materialExpectedThree = createMaterialStock("3", "3", "3", BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
 
 
 //        expected.add(materialExpectedTwo);

@@ -4,7 +4,6 @@ import java.util.List;
 public class Util {
 
     public static List<MaterialStock> countRealStocks(List<MaterialStock> basicMaterialStocks, List<MovedStock> movedMaterialStocks) {
-        //todo
         movedMaterialStocks.stream().parallel()
                 .forEach(movedStock -> modifyMaterialStockByMovedStock(movedStock, basicMaterialStocks));
         return basicMaterialStocks;
