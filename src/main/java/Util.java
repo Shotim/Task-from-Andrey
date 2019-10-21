@@ -13,6 +13,7 @@ public class Util {
     public static void method(MovedStock movedStock, List<MaterialStock> basicMaterialStock) {
 
         for (MaterialStock element : basicMaterialStock) {
+
             if (movedStock.getId().equals(element.getId())) {
                 modifyBasicMaterialStock(movedStock, element);
             }

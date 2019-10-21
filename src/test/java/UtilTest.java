@@ -1,19 +1,169 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class UtilTest {
 
-    @Test
-    public void countRealStocks() {
+    private MaterialStock createMaterialStock(int id, BigDecimal blockedStock, BigDecimal qualityStock, BigDecimal unrestrictedStock) {
+        MaterialStock materialStock = new MaterialStock();
+        materialStock.setId(id);
+        materialStock.setBlockedStock(blockedStock);
+        materialStock.setQualityInspectionStock(qualityStock);
+        materialStock.setUnrestrictedStock(unrestrictedStock);
 
+        return materialStock;
     }
 
-//    @Test
-//    public void method() {
-//    }
+    private MovedStock createMovedStock(int id, String moveType, BigDecimal movTypeSumResult) {
+        MovedStock movedStock = new MovedStock();
+        movedStock.setId(id);
+        movedStock.setMoveType(moveType);
+        movedStock.setMovTypeSumResult(movTypeSumResult);
+
+        return movedStock;
+    }
+
+    @Test
+    public void countRealStocks_unrestrictedStock() {
+        List<MaterialStock> materialStocks = new ArrayList<>();
+
+        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+        materialStocks.add(materialStock);
+
+        List<MovedStock> movedStocks = new ArrayList<>();
+
+        MovedStock movedStock = createMovedStock(1, "201", BigDecimal.valueOf(87.654321));
+        movedStocks.add(movedStock);
+
+        List<MaterialStock> expected = new ArrayList<>();
+
+        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+        expected.add(materialExpected);
+
+        List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void countRealStocks_qualityInspectionStock() {
+        List<MaterialStock> materialStocks = new ArrayList<>();
+
+        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        materialStocks.add(materialStock);
+
+        List<MovedStock> movedStocks = new ArrayList<>();
+
+        MovedStock movedStock = createMovedStock(1, "323", BigDecimal.valueOf(87.654321));
+        movedStocks.add(movedStock);
+
+        List<MaterialStock> expected = new ArrayList<>();
+
+        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
+        expected.add(materialExpected);
+
+        List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void countRealStocks_blockedStock() {
+        List<MaterialStock> materialStocks = new ArrayList<>();
+
+        MaterialStock materialStock = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        materialStocks.add(materialStock);
+
+        List<MovedStock> movedStocks = new ArrayList<>();
+
+        MovedStock movedStock = createMovedStock(1, "325", BigDecimal.valueOf(87.654321));
+        movedStocks.add(movedStock);
+
+        List<MaterialStock> expected = new ArrayList<>();
+
+        MaterialStock materialExpected = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        expected.add(materialExpected);
+
+        List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void countRealStocks_unsortedLists() {
+        List<MaterialStock> materialStocks = new ArrayList<>();
+
+        MaterialStock materialStockOne = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialStockTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        MaterialStock materialStockThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+
+        materialStocks.add(materialStockThree);
+        materialStocks.add(materialStockOne);
+        materialStocks.add(materialStockTwo);
+
+        List<MovedStock> movedStocks = new ArrayList<>();
+
+        MovedStock movedStockOne = createMovedStock(1, "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockTwo = createMovedStock(2, "324", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockThree = createMovedStock(3, "262", BigDecimal.valueOf(87.654321));
+
+        movedStocks.add(movedStockTwo);
+        movedStocks.add(movedStockOne);
+        movedStocks.add(movedStockThree);
+
+        List<MaterialStock> expected = new ArrayList<>();
+
+        MaterialStock materialExpectedOne = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+
+        expected.add(materialExpectedThree);
+        expected.add(materialExpectedOne);
+        expected.add(materialExpectedTwo);
+
+        List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void countRealStocks_listsWithDifferentLength() {
+        List<MaterialStock> materialStocks = new ArrayList<>();
+
+        MaterialStock materialStockOne = createMaterialStock(1, BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+//        MaterialStock materialStockTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        MaterialStock materialStockThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678));
+
+        materialStocks.add(materialStockThree);
+        materialStocks.add(materialStockOne);
+//        materialStocks.add(materialStockTwo);
+
+        List<MovedStock> movedStocks = new ArrayList<>();
+
+        MovedStock movedStockOne = createMovedStock(1, "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockTwo = createMovedStock(2, "326", BigDecimal.valueOf(87.654321));
+        MovedStock movedStockThree = createMovedStock(3, "262", BigDecimal.valueOf(87.654321));
+
+        movedStocks.add(movedStockThree);
+        movedStocks.add(movedStockOne);
+        movedStocks.add(movedStockTwo);
+
+        List<MaterialStock> expected = new ArrayList<>();
+
+        MaterialStock materialExpectedOne = createMaterialStock(1, BigDecimal.valueOf(211.111101), BigDecimal.valueOf(0), BigDecimal.valueOf(0));
+//        MaterialStock materialExpectedTwo = createMaterialStock(2, BigDecimal.valueOf(0), BigDecimal.valueOf(123.45678), BigDecimal.valueOf(0));
+        MaterialStock materialExpectedThree = createMaterialStock(3, BigDecimal.valueOf(0), BigDecimal.valueOf(0), BigDecimal.valueOf(211.111101));
+
+
+//        expected.add(materialExpectedTwo);
+        expected.add(materialExpectedThree);
+        expected.add(materialExpectedOne);
+
+        List<MaterialStock> actual = Util.countRealStocks(materialStocks, movedStocks);
+
+        Assert.assertEquals(expected, actual);
+    }
 }
